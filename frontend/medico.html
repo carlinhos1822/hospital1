@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="css/style.css">
+  <title>Hospital Pokémon - Painel Médico</title>
+</head>
+<body class="form-page medico-page">
+  <main class="container">
+    <header class="page-heading">
+      <div>
+        <h1>🩺 Painel Médico</h1>
+        <p>Fila de triagem, consultas e prescrições</p>
+      </div>
+      <div class="nav-actions">
+        <a class="button button-secondary" href="medicacoes.html">💊 Medicações</a>
+        <button type="button" class="btn-abrir-tv" onclick="window.open('tv.html','_blank')">📺 Abrir Tela da TV</button>
+      </div>
+    </header>
+
+    <div class="consultorio-input">
+      <label for="consultorio-num">Meu consultório</label>
+      <input type="text" id="consultorio-num" value="01" maxlength="12">
+      <span>Este número será exibido na TV ao chamar o paciente.</span>
+    </div>
+
+    <section class="card form-card">
+      <h2>Pacientes aguardando atendimento</h2>
+      <div id="triagens" class="triage-list"></div>
+    </section>
+
+    <form id="consultaForm" class="card form-card">
+      <h2>Registrar consulta e prescrição</h2>
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="paciente">Paciente selecionado</label>
+          <input id="paciente" placeholder="Selecione um paciente na fila" readonly required>
+        </div>
+        <div class="form-group">
+          <label for="diagnostico">Diagnóstico</label>
+          <input id="diagnostico" placeholder="Diagnóstico">
+        </div>
+        <div class="form-group">
+          <label for="medicacao">Medicação</label>
+          <select id="medicacao" required>
+            <option value="">Selecione a medicação</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="quantidade">Quantidade prescrita</label>
+          <input id="quantidade" type="number" min="1" step="1" value="1" required>
+        </div>
+        <div class="form-group full-width">
+          <label for="obs">Observações</label>
+          <textarea id="obs" placeholder="Observações"></textarea>
+        </div>
+      </div>
+      <p id="mensagemMedico" class="status-message" role="status" hidden></p>
+      <div class="form-actions">
+        <button id="btnSalvarConsulta" type="submit" class="btn-primary">Salvar consulta</button>
+      </div>
+    </form>
+  </main>
+  <script src="medico.js" defer></script>
+</body>
+</html>

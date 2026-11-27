@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>
+        Hospital Pokémon - Administração
+    </title>
+
+    <link rel="stylesheet" href="css/style.css">
+
+</head>
+
+
+<body class="admin-page">
+
+<div class="container">
+
+    <!-- CABEÇALHO -->
+
+    <header class="navbar">
+
+        <div class="nav-brand">
+
+            <div class="logo-container">
+
+                <!-- COLOQUE SUA LOGO AQUI -->
+
+                <!--
+                <img src="img/logo.png"
+                     alt="Logo Hospital Pokémon"
+                     class="hospital-logo">
+                -->
+
+                <div class="logo-placeholder">
+                    ⚙️
+                </div>
+
+            </div>
+
+
+            <div class="brand-text">
+
+                <h1>
+                    Hospital Pokémon
+                </h1>
+
+                <span>
+                    Administração
+                </span>
+
+            </div>
+
+        </div>
+
+        <div class="nav-actions">
+            <a class="button button-accent" href="almoxarifado.html">📦 Almoxarifado</a>
+            <button type="button" class="button button-secondary" onclick="sair()">Sair</button>
+        </div>
+
+    </header>
+
+
+    <main>
+
+        <!-- TÍTULO -->
+
+        <section class="page-title">
+
+            <div class="title-icon">
+                ⚙️
+            </div>
+
+            <div>
+
+                <h2>
+                    Cadastrar Usuário
+                </h2>
+
+                <p>
+                    Gerencie os usuários do sistema hospitalar.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- LINK VOLTAR -->
+
+        <a
+            href="index.html"
+            class="back-link">
+
+            ← Voltar para o Login
+
+        </a>
+
+
+        <br>
+        <br>
+
+
+        <!-- FORMULÁRIO -->
+
+        <section class="card">
+
+            <div class="card-header">
+
+                <div>
+
+                    <h3>
+                        👤 Novo usuário
+                    </h3>
+
+                    <p>
+                        Cadastre um novo funcionário no sistema.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <form id="formUsuario">
+
+                <div class="form-grid">
+
+                    <div class="form-group">
+
+                        <label for="usuario">
+                            Usuário
+                        </label>
+
+                        <input
+                            type="text"
+                            id="usuario"
+                            placeholder="Nome de usuário (Login)"
+                            required>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="senha">
+                            Senha
+                        </label>
+
+                        <input
+                            type="password"
+                            id="senha"
+                            placeholder="Senha"
+                            required>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="tipo">
+                            Tipo de usuário
+                        </label>
+
+                        <select
+                            id="tipo"
+                            required>
+
+                            <option value="">
+                                Selecione o tipo
+                            </option>
+
+                            <option value="atendimento">
+                                Atendimento
+                            </option>
+
+                            <option value="triagem">
+                                Triagem
+                            </option>
+
+                            <option value="medico">
+                                Médico
+                            </option>
+
+                            <option value="admin">
+                                Administrador
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+
+                <div class="form-actions">
+
+                    <button
+                        type="submit"
+                        class="btn-primary">
+
+                        👤 Cadastrar Usuário
+
+                    </button>
+
+                </div>
+
+            </form>
+
+            <p id="mensagemAdmin" class="status-message" role="status" hidden></p>
+
+        </section>
+
+
+        <!-- USUÁRIOS -->
+
+        <section class="card">
+
+            <div class="card-header">
+
+                <div>
+
+                    <h3>
+                        👥 Usuários cadastrados
+                    </h3>
+
+                    <p>
+                        Lista de usuários cadastrados no sistema.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div
+                id="listaUsuarios"
+                class="admin-list">
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+
+<script>
+const formUsuario = document.getElementById("formUsuario");
+const listaUsuarios = document.getElementById("listaUsuarios");
+const mensagemAdmin = document.getElementById("mensagemAdmin");
+const tiposUsuario = [
+    ["atendimento", "Atendimento"],
+    ["triagem", "Triagem"],
+    ["medico", "Médico"],
+    ["admin", "Administrador"]
+];
+
+function mostrarMensagem(texto, erro) {
+    mensagemAdmin.textContent = texto;
+    mensagemAdmin.className = erro
+        ? "status-message error-message"
+        : "status-message success-message";
+    mensagemAdmin.hidden = false;
+}
+
+async function requestJson(url, options) {
+    const response = await fetch(url, options);
+    const data = await response.json();
+    if (!response.ok) {
+        if (response.status === 401 || response.status === 403) {
+            localStorage.removeItem("hospital_user");
+            location.href = "index.html";
+        }
+        throw new Error(data.erro || "Falha na solicitação.");
+    }
+    return data;
+}
+
+formUsuario.addEventListener("submit", async event => {
+    event.preventDefault();
+    const submitButton = formUsuario.querySelector("button[type='submit']");
+    submitButton.disabled = true;
+    mensagemAdmin.hidden = true;
+    try {
+        await requestJson("/usuarios", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                usuario: document.getElementById("usuario").value.trim(),
+                senha: document.getElementById("senha").value,
+                tipo: document.getElementById("tipo").value
+            })
+        });
+        formUsuario.reset();
+        mostrarMensagem("Usuário cadastrado com sucesso.", false);
+        await carregarUsuarios();
+    } catch (error) {
+        mostrarMensagem(error.message || "Erro ao cadastrar usuário.", true);
+    } finally {
+        submitButton.disabled = false;
+    }
+});
+
+async function alterarTipo(usuario, tipo) {
+    try {
+        await requestJson(`/usuarios/${encodeURIComponent(usuario)}`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ tipo })
+        });
+        mostrarMensagem(`Perfil de ${usuario} atualizado.`, false);
+        await carregarUsuarios();
+    } catch (error) {
+        mostrarMensagem(error.message || "Erro ao atualizar o perfil.", true);
+    }
+}
+
+function carregarUsuarios() {
+    return requestJson("/usuarios")
+        .then(usuarios => {
+            listaUsuarios.replaceChildren();
+            if (!usuarios.length) {
+                const empty = document.createElement("p");
+                empty.className = "empty-state";
+                empty.textContent = "Nenhum usuário cadastrado.";
+                listaUsuarios.appendChild(empty);
+                return;
+            }
+
+            usuarios.forEach(usuario => {
+                const card = document.createElement("article");
+                card.className = "admin-user";
+                const name = document.createElement("strong");
+                name.textContent = `👤 ${usuario.usuario}`;
+                const controls = document.createElement("div");
+                controls.className = "admin-user-controls";
+                const select = document.createElement("select");
+                select.setAttribute("aria-label", `Perfil de ${usuario.usuario}`);
+                tiposUsuario.forEach(([value, label]) => {
+                    const option = document.createElement("option");
+                    option.value = value;
+                    option.textContent = label;
+                    option.selected = value === usuario.tipo;
+                    select.appendChild(option);
+                });
+                const save = document.createElement("button");
+                save.type = "button";
+                save.className = "btn-secondary";
+                save.textContent = "Salvar perfil";
+                save.addEventListener("click", () => alterarTipo(usuario.usuario, select.value));
+                controls.append(select, save);
+                card.append(name, controls);
+                listaUsuarios.appendChild(card);
+            });
+        })
+        .catch(error => {
+            mostrarMensagem(error.message || "Erro ao carregar usuários.", true);
+        });
+}
+
+async function sair() {
+    try {
+        await fetch("/logout", { method: "POST" });
+    } finally {
+        localStorage.removeItem("hospital_user");
+        location.href = "index.html";
+    }
+}
+
+carregarUsuarios();
+
+</script>
+
+</body>
+
+</html>

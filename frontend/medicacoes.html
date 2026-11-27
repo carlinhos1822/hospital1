@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="css/style.css">
+  <title>Hospital Pokémon - Medicações prescritas</title>
+</head>
+<body class="form-page">
+<main class="container">
+  <header class="page-heading">
+    <div>
+      <h1>💊 Medicações prescritas</h1>
+      <p>Consultas e prescrições registradas</p>
+    </div>
+    <a class="button button-secondary" href="medico.html">Voltar ao painel médico</a>
+  </header>
+  <section id="listaMedicacoes" aria-live="polite"></section>
+</main>
+
+<script>
+async function carregarMedicacoesPrescritas() {
+  const container = document.getElementById("listaMedicacoes");
+  container.replaceChildren();
+  try {
+    const response = await fetch("/medicacoes");
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.erro || "Falha ao carregar prescrições.");
+    if (!data.length) {
+      const empty = document.createElement("p");
+      empty.className = "empty-state";
+      empty.textContent = "Nenhuma medicação prescrita.";
+      container.appendChild(empty);
+      return;
+    }
+
+    data.slice().reverse().forEach(consulta => {
+      const card = document.createElement("article");
+      card.className = "medicacao-card";
+      const patient = document.createElement("h3");
+      patient.textContent = consulta.paciente || "Paciente";
+      const medication = document.createElement("p");
+      medication.textContent =
+        `Medicação: ${consulta.medicacao || "—"} · Quantidade: ${consulta.quantidade ?? "—"}`;
+      const diagnosis = document.createElement("p");
+      diagnosis.textContent = `Diagnóstico: ${consulta.diagnostico || "Não informado"}`;
+      const observations = document.createElement("p");
+      observations.textContent = `Observações: ${consulta.obs || "Nenhuma"}`;
+      card.append(patient, medication, diagnosis, observations);
+      container.appendChild(card);
+    });
+  } catch (error) {
+    const message = document.createElement("p");
+    message.className = "status-message error-message";
+    message.textContent = error.message || "Erro ao carregar prescrições.";
+    container.appendChild(message);
+  }
+}
+
+carregarMedicacoesPrescritas();
+</script>
+</body>
+</html>

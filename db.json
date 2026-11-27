@@ -1,0 +1,10 @@
+{
+  "alunos": [
+    {
+      "id": 1,
+      "nome": "bira",
+      "email": "bira@gmail.com",
+      "curso": "Engenharia de Software"
+    }
+  ]
+}

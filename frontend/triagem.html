@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Hospital Pokémon - Triagem</title>
+
+  <!-- CSS principal -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body class="triagem-page">
+
+  <div class="container">
+
+    <!-- =========================
+         CABEÇALHO
+    ========================== -->
+    <header class="navbar">
+
+      <div class="nav-brand">
+
+        <!-- ==================================================
+             LOGO DO HOSPITAL
+             COLOQUE SUA LOGO DENTRO DA TAG <img>
+             Exemplo:
+             <img src="img/logo.png" alt="Logo Hospital Pokémon">
+        =================================================== -->
+        <div class="logo-container">
+          <!-- <img src="img/logo.png" alt="Logo Hospital Pokémon" class="hospital-logo"> -->
+
+          <div class="logo-placeholder">
+            🏥
+          </div>
+        </div>
+
+        <div class="brand-text">
+          <h1>Hospital Pokémon</h1>
+          <span>Triagem Hospitalar</span>
+        </div>
+
+      </div>
+
+      <div class="nav-actions">
+
+        <button
+          class="btn-tv"
+          onclick="window.open('tv.html','_blank')">
+          📺 Abrir Tela da TV
+        </button>
+
+      </div>
+
+    </header>
+
+
+    <!-- =========================
+         CONTEÚDO PRINCIPAL
+    ========================== -->
+
+    <main class="main-content">
+
+      <!-- Título -->
+      <section class="page-title">
+
+        <div>
+          <span class="title-icon">🩺</span>
+
+          <div>
+            <h2>Triagem</h2>
+
+            <p>
+              Faça a avaliação inicial dos pacientes
+            </p>
+          </div>
+        </div>
+
+      </section>
+
+
+      <!-- =========================
+           FILA DE PACIENTES
+      ========================== -->
+
+      <section class="card pacientes-fila">
+
+        <div class="card-header">
+
+          <div>
+            <h3>👥 Pacientes aguardando triagem</h3>
+
+            <p>
+              Selecione um paciente para chamá-lo na TV.
+            </p>
+          </div>
+
+          <span class="status-badge">
+            Aguardando
+          </span>
+
+        </div>
+
+
+        <div id="fila-pacientes" class="fila-container">
+
+          <p class="loading">
+            🔄 Carregando pacientes...
+          </p>
+
+        </div>
+
+
+        <div class="fila-actions">
+
+          <button
+            class="btn-secondary"
+            onclick="carregarPacientes()">
+            🔄 Atualizar lista
+          </button>
+
+        </div>
+
+      </section>
+
+
+      <!-- =========================
+           FORMULÁRIO DE TRIAGEM
+      ========================== -->
+
+      <section class="card">
+
+        <div class="card-header">
+
+          <div>
+            <h3>🩺 Formulário de Triagem</h3>
+
+            <p>
+              Preencha os dados para classificar o risco do paciente.
+            </p>
+          </div>
+
+          <span class="form-icon">
+            🏥
+          </span>
+
+        </div>
+
+
+        <div class="form-grid">
+
+          <!-- Nome -->
+          <div class="form-group">
+
+            <label for="nome">
+              Nome do paciente
+            </label>
+
+            <input
+              id="nome"
+              type="text"
+              placeholder="Digite o nome do paciente">
+
+          </div>
+
+
+          <!-- Sintoma -->
+          <div class="form-group">
+
+            <label for="sintoma">
+              Sintoma principal
+            </label>
+
+            <select id="sintoma">
+
+              <option value="">
+                Selecione o sintoma
+              </option>
+
+              <option value="dor_leve">
+                Dor leve
+              </option>
+
+              <option value="resfriado">
+                Resfriado
+              </option>
+
+              <option value="coriza">
+                Coriza
+              </option>
+
+              <option value="tosse">
+                Tosse
+              </option>
+
+              <option value="febre">
+                Febre
+              </option>
+
+              <option value="vomito">
+                Vômito
+              </option>
+
+              <option value="diarreia">
+                Diarreia
+              </option>
+
+              <option value="falta_ar_moderada">
+                Falta de ar moderada
+              </option>
+
+              <option value="falta_ar_grave">
+                Falta de ar grave
+              </option>
+
+              <option value="infarto">
+                Suspeita de infarto
+              </option>
+
+              <option value="avc">
+                Suspeita de AVC
+              </option>
+
+              <option value="convulsao">
+                Convulsão
+              </option>
+
+              <option value="hemorragia">
+                Hemorragia
+              </option>
+
+            </select>
+
+          </div>
+
+
+          <!-- Temperatura -->
+          <div class="form-group">
+
+            <label for="temp">
+              Temperatura
+            </label>
+
+            <input
+              id="temp"
+              type="number"
+              step="0.1"
+              placeholder="Ex.: 37.5">
+
+          </div>
+
+
+          <!-- Alergia -->
+          <div class="form-group">
+
+            <label for="alergia">
+              Alergias
+            </label>
+
+            <input
+              id="alergia"
+              type="text"
+              placeholder="Informe as alergias">
+
+          </div>
+
+
+          <!-- Observação -->
+          <div class="form-group full-width">
+
+            <label for="observacao">
+              Observações
+            </label>
+
+            <textarea
+              id="observacao"
+              placeholder="Digite outras informações importantes"></textarea>
+
+          </div>
+
+        </div>
+
+
+        <!-- Resultado -->
+        <div id="resultado"></div>
+
+
+        <!-- Botão salvar -->
+        <div class="form-actions">
+
+          <button
+            class="btn-primary"
+            onclick="salvar()">
+            🩺 Salvar Triagem
+          </button>
+
+        </div>
+
+      </section>
+
+    </main>
+
+  </div>
+
+
+  <!-- =========================
+       JAVASCRIPT
+  ========================== -->
+
+  <script src="triagem.js" defer></script>
+
+</body>
+
+</html>

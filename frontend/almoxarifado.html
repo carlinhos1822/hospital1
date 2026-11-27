@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="css/style.css">
+  <title>Hospital Pokémon - Almoxarifado</title>
+</head>
+<body class="almoxarifado-page">
+<header class="navbar">
+   <div class="nav-brand">
+    <div class="logo-icon">📦</div>
+      <div>
+        <h1>Hospital Pokémon - Almoxarifado</h1>
+        <span>Gestão de entrada e controle de estoque</span>
+      </div>
+   </div>
+   <div class="nav-user">
+    <span class="user-pill" id="nomeUsuario">📦 Almoxarifado</span>
+    <button type="button" class="btn-nav" onclick="sair()">🚪 Sair</button>
+   </div>
+</header>
+
+<div class="container">
+
+  <!-- ALERTA -->
+  <div class="alerta-estoque" id="alertaEstoque" hidden>
+    ⚠️ <strong>Atenção:</strong> <span id="alertaTexto"></span>
+  </div>  
+
+  <!-- STATS -->
+  <div class="stats-bar">
+    <div class="stat-card">
+        <div class="stat-icon purple">📦</div>
+        <div>
+          <div class="stat-value" id="statItens">-</div>
+          <div class="stat-label">Tipos Cadastrados</div>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon green">🟢</div>
+        <div>
+          <div class="stat-value" id="statOk">-</div>
+          <div class="stat-label">Estoque Normal</div>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon orange">⚠️</div>
+        <div>
+          <div class="stat-value" id="statBaixo">-</div>
+          <div class="stat-label">Estoque Baixo (menor que 10)</div>
+        </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon red"></div>
+      <div>
+        <div class="stat-value" id="statZerando">-</div>
+        <div class="stat-label">Zerados / Esgotados</div>
+      </div>
+    </div>
+  </div>
+   
+    <!-- MAIN GRID -->
+  <div class="main-grid">
+
+    <!-- COLUNA ESQUERDA: FORMULÁRIO ENTRADA -->
+    <div>
+      <div class="card">
+        <div class="header">
+          <h2> Entrada de Medicamentos</h2>
+        </div>
+        <div class="card-body">
+
+          <!-- Tabs: Novo ou Repor -->
+          <div class="entrada-tabs">
+            <button class="tab-btn active" id="tabNovo"
+             onclick="setTab('novo')"> Novo Medicamento</button>
+            <button class="tab-btn" id="tabRepor" onclick="setTab
+            ('repor')"> Repor Existente</button>
+          </div>
+
+          <!-- PAINEL: Cadastrar Novo -->
+          <div id="painelNovo">
+            <div class="form-group">
+              <label for="emNome">Nome do Medicamento</label>
+              <input type="text" id="emNome" class="form-control"
+               placeholder="Ex: Paracetamol 750mg"
+                 autocomplete="off">
+            </div>
+            <div class="form-group">
+              <label for="emQtd">Quantidade inicial</label>
+              <input type="number" id="emQtd" class="form-control" min="0" step="1" value="0">
+            </div>
+            <div class="form-group">
+              <label for="emUnidade">Tipo de Unidade</label>
+              <select id="emUnidade" class="form-control">
+                <option value="comprimidos">Comprimidos</option>
+                <option value="cápsulas">Cápsulas</option>
+                <option value="frascos">Frascos</option>
+                <option value="ampolas">Ampolas</option>
+                <option value="sachês">Sachês</option>
+                <option value="unidades">Unidades</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="emCategoria">Categoria Farmacológica</label>
+              <select id="emCategoria" class="form-control">
+                <option value="Analgésico/Antipirético">Analgésico /
+                  Antipirético</option>
+                <option value="Antibiótico">Antibiótico</option>
+                <option value="Anti-inflamatório">Anti-inflamatório</option>
+                <option value="Antialérgico">Antialérgico</option>
+                <option value="Protetor Gástico">Protetor Gástrico</option>
+                <option value="Antiespasmótico">Antiespasmódico</option>
+                <option value="Antiemético">Antiemético</option>
+                <option value="Solução">Solução</option>
+                <option value="Vitamina/Suplemento">Vitamina /
+                  Suplemento</option>
+                <option value="Geral">Geral</option>
+              </select>
+            </div>
+            <button class="btn-full btn-purple" onclick="darEntrada()">
+              Registrar Entrada no Estoque
+            </button>
+          </div>
+
+          <!-- PAINEL: Repor Existente -->
+          <div id="painelRepor" hidden>
+            <div class="form-group">
+              <label for="selRepormed">Selecionar Medicamento</label>
+              <select id="selRepormed" class="form-control">
+                <option value="">-- Selecione --</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="reporQtd">Quantidade a Adicionar</label>
+              <input type="number" id="reporQtd"
+              class="form-control" value="10" min="1">
+            </div>
+            <div class="form-group">
+                <label for="reporObs">Observação <small>
+                (Opicional)</small></label>
+                <input type="text" id="reporObs" class="form-control" placeholder="Ex: Nota fiscal NF-001">             
+            </div>
+            <button class="btn-full btn-purple" onclick="reporEstoque()">Adicionar ao Estoque Existente</button>
+          </div>
+        </div>
+      </div>
+      <!-- Histórico de movimentações -->
+      <div class="card historico-card">
+        <div class="card-header">
+          <h2>Histórico de movimentações</h2>
+          <button class="btn-sm btn-secondary" type="button" onclick="carregarHistoricoEntradas()">🔄 Atualizar</button>
+        </div>
+        <div class="card-body" id="historicoEntradas">
+          <div class="empty-state">
+            <div class="empty-icon">🗒️</div>
+            <p>Nenhuma movimentação registrada.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+ 
+  <!-- COLUNA DIREITA: ESTOQUE ATUAL -->
+  <div>
+    <div class="card">
+      <div class="card-header">
+        <h2>📊 Estoque Atual de Medicamentos</h2>
+        <button class="btn-sm btn-secondary"
+         onclick="carregarEstoque()">🔄️ Atualizar</button>
+      </div>
+      <div class="card-body">
+
+        <div class="search-bar">
+          <input type="text" class="search-input"
+          id="buscarMed" placeholder="🔍 Buscar medicamento..."
+            oninput="filtrarTabela()">
+        </div>
+
+        <div class="filter-chips" id="filterChips">
+        </div>
+        
+        <div class="table-scroll">
+          <table class="estoque-table">
+            <thead>
+              <tr>
+                <th>Medicamento</th>
+                <th>Categoria</th>
+                <th>Disponível</th>
+                <th>Unidade</th>
+                <th>Ações</th>
+              </tr>
+            </thead>
+            <tbody id="tableEstoque">
+              <tr>
+                <td colspan="5">
+                  <div class="empty-stats">
+                    <div class="empty-icon">⏳</div>
+                    <p>Carregando...</p>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  </div>
+
+    <!-- Modal: Editar quantidade manualmente -->
+    <div class="modal-overlay" id="modalEditar">
+      <div class="modal-box">
+        <div class="modal-title">✏️ Editar Estoque</div>
+        <div class="form-group">
+          <p id="modalMedNome" class="modal-med-name"></p>
+          <label>Quantidade a adicionar (negativo para remover):</label>
+          <input type="number" id="modalQtd" class="form-control" value="0">
+        </div>
+        <div class="modal-actions">
+          <button class="btn-sm btn-secondary"
+          onclick="fecharModal()">Cancelar</button>
+          <button class="btn-sm btn-sucess"
+          onclick="confirmarEdicao()">✅ Confirmar</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <script src="almoxarifado.js" defer></script>
+  </div>
+  
+</body>
+</html>

@@ -1,0 +1,90 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/style.css">
+    <title>Hospital Pokémon - Entrar</title>
+</head>
+<body class="login-page">
+    <main class="container login-card">
+        <h1>🏥 Hospital Pokémon</h1>
+        <p class="page-description">Acesse o sistema hospitalar</p>
+
+        <form id="formLogin">
+            <label for="usuario">Usuário</label>
+            <input id="usuario" name="usuario" autocomplete="username" placeholder="Digite seu usuário" required>
+
+            <label for="senha">Senha</label>
+            <input id="senha" name="senha" type="password" autocomplete="current-password" placeholder="Digite sua senha" required>
+
+            <button type="submit" class="btn-primary">Entrar</button>
+        </form>
+
+        <p id="loginMensagem" class="status-message" role="alert" hidden></p>
+        <p id="configurarAdmin" class="setup-link" hidden>
+            <a href="admin-setup.html">Configurar primeiro administrador</a>
+        </p>
+    </main>
+
+    <script>
+        const loginForm = document.getElementById("formLogin");
+        const loginMensagem = document.getElementById("loginMensagem");
+
+        loginForm.addEventListener("submit", async event => {
+            event.preventDefault();
+            const button = loginForm.querySelector("button[type='submit']");
+            button.disabled = true;
+            loginMensagem.hidden = true;
+
+            try {
+                const response = await fetch("/login", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        usuario: document.getElementById("usuario").value,
+                        senha: document.getElementById("senha").value
+                    })
+                });
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.erro || "Usuário ou senha inválidos.");
+
+                localStorage.setItem("hospital_user", JSON.stringify(data));
+                const tipo = String(data.tipo).toLowerCase();
+                const paginas = {
+                    triagem: "triagem.html",
+                    medico: "medico.html",
+                    atendimento: "atendimento.html",
+                    admin: "admin.html",
+                    administrador: "admin.html"
+                };
+                if (!paginas[tipo]) throw new Error("Perfil sem página de acesso configurada.");
+                location.href = paginas[tipo];
+            } catch (error) {
+                loginMensagem.textContent = error.message || "Erro ao conectar com o servidor.";
+                loginMensagem.hidden = false;
+            } finally {
+                button.disabled = false;
+            }
+        });
+
+        window.addEventListener("keydown", event => {
+            if (event.ctrlKey && event.altKey && event.key.toLowerCase() === "a") {
+                event.preventDefault();
+                location.href = "admin.html";
+            }
+        });
+
+        fetch("/admin/status")
+            .then(async response => {
+                const status = await response.json();
+                if (!response.ok) throw new Error(status.erro || "Falha ao verificar a configuração.");
+                document.getElementById("configurarAdmin").hidden =
+                    status.adminConfigured || !status.setupAvailable;
+            })
+            .catch(error => console.error("Erro ao verificar configuração administrativa:", error));
+    </script>
+</body>
+</html>
+
